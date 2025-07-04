@@ -31,7 +31,7 @@ class Account {
         email:
           this.profile.emails && this.profile.emails.length > 0
             ? this.profile.emails[0].value
-            : undefined,
+            : "bob@tables.fake",
 
         // passport-openidconnect does not parse out email_verified.  Will need to do something special if we care about email_verified
         // email_verified: this.profile.email_verified,

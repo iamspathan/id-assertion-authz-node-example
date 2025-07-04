@@ -15,6 +15,7 @@ const files = [
   ['packages/wiki0/.env.default', 'packages/wiki0/.env'],
   ['packages/authorization-server/.env.wiki.default', 'packages/authorization-server/.env.wiki'],
   ['packages/authorization-server/.env.todo.default', 'packages/authorization-server/.env.todo'],
+  ['packages/idp/.env.default', 'packages/idp/.env'],
 ];
 
 // Copy default env files if they do not exist
@@ -30,4 +31,5 @@ console.log('  - packages/authorization-server/.env.todo');
 console.log('  - packages/authorization-server/.env.wiki');
 console.log('  - packages/wiki0/.env (for SAML config if needed)');
 console.log('  - packages/todo0/.env (if needed)');
+console.log('  - packages/idp/.env (for IDP config)');
 console.log('Required fields: CUSTOMER1_AUTH_ISSUER, CUSTOMER1_CLIENT_ID, etc.');

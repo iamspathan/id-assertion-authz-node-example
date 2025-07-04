@@ -47,7 +47,9 @@ export default async (app, provider) => {
     res.set('cache-control', 'no-store');
     next();
   }
-
+  app.get('/.well-known/appspecific/com.chrome.devtools.json', (req, res) => {
+    res.status(404).end();
+  });
   // The user is redirected here after the OIDC server receives a request from a client.
   // Look up the configured SSO provider given the email domain from `login_hint` and redirect there.
   app.get('/interaction/:uid', setNoCache, async (req, res, next) => {
@@ -116,6 +118,7 @@ export default async (app, provider) => {
         // Finish passport authentication
         passport.authenticate(strategy, { keepSessionInfo: true })(req, res, next);
       } catch (err) {
+        console.error('Error in OIDC callback:', err);
         next(err);
       }
     },
@@ -170,6 +173,7 @@ export default async (app, provider) => {
 
         await provider.interactionFinished(req, res, result, { mergeWithLastSubmission: false });
       } catch (err) {
+        console.log(err)
         next(err);
       }
     }

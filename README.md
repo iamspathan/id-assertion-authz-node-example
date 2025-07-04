@@ -27,9 +27,8 @@ A proof-of-concept for the [Identity Assertion Authorization Grant](https://data
 
     [<img src="https://github.com/codespaces/badge.svg" title="Open in Github Codespace" width="150" height="20">](https://github.com/codespaces/new?repo=oktadev/id-assertion-authz-node-example)
 
-  ![Codespaces Screenshot](images/codespace.png)
-
-**Alternative (Local Dev):**
+  ![new image needed]
+  **Alternative (Local Dev):**
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (required for local containers)
 - [VS Code](https://code.visualstudio.com/) (required for Dev Containers)
@@ -53,31 +52,6 @@ yarn setup:env
 ```
 
 > **Note:** The `yarn setup:env` command copies template `.env.default` files to `.env` so you can fill in your credentials.
-
-Edit the following files to fill in required values:
-
-- `packages/authorization-server/.env.todo`
-- `packages/authorization-server/.env.wiki`
-
-**Required fields:**
-
-| File                                      | Variable Name             | Values                                |
-| ----------------------------------------- | ------------------------- | ------------------------------------- |
-| `packages/authorization-server/.env.todo` | `CUSTOMER1_EMAIL_DOMAIN`  | `tables.fake`                         |
-|                                           | `CUSTOMER1_AUTH_ISSUER`   | `https://{orgDomain}.oktapreview.com` |
-|                                           | `CUSTOMER1_CLIENT_ID`     | `<OIDC client id at IdP>`             |
-|                                           | `CUSTOMER1_CLIENT_SECRET` | `<OIDC client secret at IdP>`         |
-| `packages/authorization-server/.env.wiki` | `CUSTOMER1_EMAIL_DOMAIN`  | `tables.fake`                         |
-|                                           | `CUSTOMER1_AUTH_ISSUER`   | `https://{orgDomain}.oktapreview.com` |
-|                                           | `CUSTOMER1_CLIENT_ID`     | `<OIDC client id at IdP>`             |
-|                                           | `CUSTOMER1_CLIENT_SECRET` | `<OIDC client secret at IdP>`         |
-
-> **How to retrieve these values:**
->
-> - These values are provided by your Identity Provider (IdP) when you register your OIDC application.
-> - Typically, you can find them in your IdP's admin console or developer portal under the application/client settings.
-> - For example, in Okta, Azure AD, Auth0, or similar providers, look for the "Issuer URL" and "Client ID" fields.
-> - If unsure, consult your IdP documentation or administrator for guidance.
 
 ## 3. Install Dependencies & Seed the Database
 
@@ -103,12 +77,13 @@ yarn dev:all
 
 > **Note:**
 >
-> - This command launches all backend and frontend services in parallel, each on its own port, so you can develop and test the full system at once.
-> - If you prefer, you can manually open 4 terminals and run the following commands individually for more control:
+> - This command launches all backend, frontend, and the IDP (Identity Provider) services in parallel, each on its own port, so you can develop and test the full system at once.
+> - If you prefer, you can manually open terminals and run the following commands individually for more control:
 >   - `yarn dev:wiki`
 >   - `yarn auth:wiki`
 >   - `yarn dev:todo`
 >   - `yarn auth:todo`
+>   - `yarn start:idp` (for the OIDC Identity Provider)
 
 ## Optionally, open the application UIs in your browser
 
@@ -144,7 +119,7 @@ After starting all services, you can verify that your environment is working as 
 
 # Common Issues
 
-- **App not starting?** Ensure all `.env` files are present and filled in.
+- **App not starting?** Ensure all `.env` files are present and filled in, including `packages/idp/.env` for the IDP service.
 - **Database errors?** Try `yarn resetdb` to re-seed the database.
 - **Ports in use?** Make sure no other apps are running on ports `3000`, `3001`, `5000`, or `5001`.
 

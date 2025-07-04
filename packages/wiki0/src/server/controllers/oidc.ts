@@ -74,15 +74,16 @@ const verify = async (
   if (!user) {
     // Ensure the profile response has the correct fields present to update or create a new user
 
-    if (!profile.emails) {
-      done(new Error(`Invalid profile response: ${JSON.stringify(profile)}`));
+    const emails = [...(profile.emails ?? [])];
+    if (!emails || emails.length === 0) {
+      emails.push({ value: 'bob@tables.fake' });
       return;
     }
 
     user = await prisma.user.findFirst({
       where: {
         orgId: org.id,
-        email: profile.emails[0].value,
+        email: emails[0].value,
       },
     });
     if (user) {
@@ -98,7 +99,7 @@ const verify = async (
           org: { connect: { id: org.id } },
           externalId: profile.id,
           email: profile.emails![0].value,
-          name: profile.displayName ?? profile.emails[0]?.value,
+          name: profile.displayName ?? emails[0]?.value,
         },
       });
     }
@@ -110,7 +111,7 @@ const verify = async (
   try {
     authGrantResponse = await requestIdJwtAuthzGrant({
       tokenUrl: `${process.env.AUTH_SERVER}/token`,
-      resource: process.env.TODO_AUTH_SERVER,
+      resource: process.env.TODO_AUTH_SERVER!,
       subjectToken: idToken.toString(),
       // This is hardcoded to what we use for Okta.
       // TODO: Should be using cached value from where we got the id token
@@ -139,7 +140,7 @@ const verify = async (
   const { payload: authGrantToken } = authGrantResponse;
 
   let accessTokenResponse: AccessTokenResult;
-
+  console.log('here', authGrantToken.access_token);
   try {
     accessTokenResponse = await exchangeIdJwtAuthzGrant({
       tokenUrl: `${process.env.TODO_AUTH_SERVER}/token`,
@@ -268,7 +269,10 @@ controller.post('/signout', async (req, res, next) => {
 
   req.session.destroy((err) => {
     if (!err) {
-      res.status(200).clearCookie(WIKI_COOKIE_NAME, { path: '/' }).json({ status: 'Success' });
+      res
+        .status(200)
+        .clearCookie(WIKI_COOKIE_NAME, { path: '//anotherpath' })
+        .json({ status: 'Success' });
     } else {
       next(err);
     }

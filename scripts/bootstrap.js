@@ -5,8 +5,7 @@ import { execSync } from 'child_process';
 function run(cmd) {
   execSync(cmd, { stdio: 'inherit' });
 }
-
-run('node scripts/setup-env.js');
+// Ensure the script is run from the project root
 run('yarn install');
 run('yarn postinstall');
 run('yarn resetdb');

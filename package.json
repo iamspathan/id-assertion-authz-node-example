@@ -19,7 +19,8 @@
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "setup:env": "node scripts/setup-env.js",
     "bootstrap": "node scripts/bootstrap.js",
-    "dev:all": "concurrently \"yarn dev:wiki\" \"yarn auth:wiki\" \"yarn dev:todo\" \"yarn auth:todo\"",
+    "start:idp": "yarn workspace idp start",
+    "dev:all": "concurrently \"yarn dev:wiki\" \"yarn auth:wiki\" \"yarn dev:todo\" \"yarn auth:todo\" \"yarn start:idp\"",
     "open:apps": "node scripts/open-apps.js"
   },
   "author": "",

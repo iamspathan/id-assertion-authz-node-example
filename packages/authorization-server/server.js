@@ -75,6 +75,7 @@ try {
     console.log(`application is listening on port ${PORT}: ${ISSUER}/.well-known/openid-configuration`);
   });
 } catch (err) {
+  console.error(err);
   if (server?.listening) server.close();
   console.error(err);
   process.exitCode = 1;

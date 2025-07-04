@@ -925,7 +925,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:^5.13.0":
+"@prisma/client@npm:5.14.0":
   version: 5.14.0
   resolution: "@prisma/client@npm:5.14.0"
   peerDependencies:
@@ -934,6 +934,21 @@ __metadata:
     prisma:
       optional: true
   checksum: 10c0/b213117401670ea131c044edb25637f6e8eca438163a7433b9f640f86847d53665d84655bc664cfafbdc32745c91cde595cb0390d77fb55941ab52bd925b8efb
+  languageName: node
+  linkType: hard
+
+"@prisma/client@npm:^6.11.1":
+  version: 6.11.1
+  resolution: "@prisma/client@npm:6.11.1"
+  peerDependencies:
+    prisma: "*"
+    typescript: ">=5.1.0"
+  peerDependenciesMeta:
+    prisma:
+      optional: true
+    typescript:
+      optional: true
+  checksum: 10c0/6206ea06c099fbdc47c0bbde84a9d5adfcb333d9c037f000ba87d55efae0a915f74441d3ca20ef8d1542d3c15b6eba970657b96ec5b225afd31f3de585fa2976
   languageName: node
   linkType: hard
 
@@ -4854,6 +4869,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "id-assertion-authz-node-example@workspace:."
   dependencies:
+    "@prisma/client": "npm:^6.11.1"
     "@typescript-eslint/eslint-plugin": "npm:^6.21.0"
     "@typescript-eslint/parser": "npm:^6.21.0"
     concurrently: "npm:^8.2.2"
@@ -4867,6 +4883,18 @@ __metadata:
     eslint-plugin-prettier: "npm:^4.2.1"
     eslint-plugin-react: "npm:^7.34.1"
     eslint-plugin-react-hooks: "npm:^4.6.1"
+  languageName: unknown
+  linkType: soft
+
+"idp@workspace:packages/idp":
+  version: 0.0.0-use.local
+  resolution: "idp@workspace:packages/idp"
+  dependencies:
+    dotenv: "npm:^16.4.5"
+    ejs: "npm:^3.1.10"
+    express: "npm:^4.19.2"
+    nodemon: "npm:^3.1.10"
+    oidc-provider: "npm:^8.4.6"
   languageName: unknown
   linkType: soft
 
@@ -6209,6 +6237,26 @@ __metadata:
   bin:
     nodemon: bin/nodemon.js
   checksum: 10c0/3aeb50105ecae31ce4d0a5cd464011d4aa0dc15419e39ac0fd203d784e38940e1436f4ed96adbaa0f9614ee0644f91e3cf38f2afae8d3918ae7afc51c7e2116b
+  languageName: node
+  linkType: hard
+
+"nodemon@npm:^3.1.10":
+  version: 3.1.10
+  resolution: "nodemon@npm:3.1.10"
+  dependencies:
+    chokidar: "npm:^3.5.2"
+    debug: "npm:^4"
+    ignore-by-default: "npm:^1.0.1"
+    minimatch: "npm:^3.1.2"
+    pstree.remy: "npm:^1.1.8"
+    semver: "npm:^7.5.3"
+    simple-update-notifier: "npm:^2.0.0"
+    supports-color: "npm:^5.5.0"
+    touch: "npm:^3.1.0"
+    undefsafe: "npm:^2.0.5"
+  bin:
+    nodemon: bin/nodemon.js
+  checksum: 10c0/95b64d647f2c22e85e375b250517b0a4b32c2d2392ad898444e331f70d6b1ab43b17f53a8a1d68d5879ab8401fc6cd6e26f0d2a8736240984f6b5a8435b407c0
   languageName: node
   linkType: hard
 
@@ -8427,7 +8475,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "todo0@workspace:packages/todo0"
   dependencies:
-    "@prisma/client": "npm:^5.13.0"
+    "@prisma/client": "npm:5.14.0"
     "@rollup/rollup-linux-x64-gnu": "npm:4.17.2"
     "@types/express": "npm:^4.17.21"
     "@types/express-session": "npm:^1.18.0"
@@ -9001,7 +9049,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "wiki0@workspace:packages/wiki0"
   dependencies:
-    "@prisma/client": "npm:^5.13.0"
+    "@prisma/client": "npm:5.14.0"
     "@rollup/rollup-linux-x64-gnu": "npm:4.17.2"
     "@tiptap/extension-color": "npm:^2.3.0"
     "@tiptap/extension-link": "npm:^2.3.0"
