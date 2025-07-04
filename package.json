@@ -13,6 +13,7 @@
     "start:wiki0": "yarn workspace wiki0 start",
     "build:todo": "yarn workspace todo0 build",
     "build:wiki": "yarn workspace wiki0 build",
+    "build:idp": "yarn workspace idp build",
     "resetdb": "yarn workspace wiki0 resetdb && yarn workspace todo0 resetdb",
     "migratedb": "yarn workspace wiki0 migratedb && yarn workspace todo0 migratedb",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx --cache",

@@ -937,18 +937,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:^6.11.1":
-  version: 6.11.1
-  resolution: "@prisma/client@npm:6.11.1"
+"@prisma/client@npm:^5.13.0":
+  version: 5.22.0
+  resolution: "@prisma/client@npm:5.22.0"
   peerDependencies:
     prisma: "*"
-    typescript: ">=5.1.0"
   peerDependenciesMeta:
     prisma:
       optional: true
-    typescript:
-      optional: true
-  checksum: 10c0/6206ea06c099fbdc47c0bbde84a9d5adfcb333d9c037f000ba87d55efae0a915f74441d3ca20ef8d1542d3c15b6eba970657b96ec5b225afd31f3de585fa2976
+  checksum: 10c0/ad111b931f184249794f811637456eb38dcfd0d7047e5a1f64804e5256f462fa3ee7c7a552fc8fa181e8daacc2b958af7426cb57bf0dc66605c3ef7c4aef4afb
   languageName: node
   linkType: hard
 
@@ -4869,7 +4866,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "id-assertion-authz-node-example@workspace:."
   dependencies:
-    "@prisma/client": "npm:^6.11.1"
     "@typescript-eslint/eslint-plugin": "npm:^6.21.0"
     "@typescript-eslint/parser": "npm:^6.21.0"
     concurrently: "npm:^8.2.2"
@@ -4890,11 +4886,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "idp@workspace:packages/idp"
   dependencies:
+    "@types/node": "npm:^20.12.7"
     dotenv: "npm:^16.4.5"
     ejs: "npm:^3.1.10"
     express: "npm:^4.19.2"
     nodemon: "npm:^3.1.10"
     oidc-provider: "npm:^8.4.6"
+    typescript: "npm:^5.4.5"
   languageName: unknown
   linkType: soft
 
@@ -8475,7 +8473,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "todo0@workspace:packages/todo0"
   dependencies:
-    "@prisma/client": "npm:5.14.0"
+    "@prisma/client": "npm:^5.13.0"
     "@rollup/rollup-linux-x64-gnu": "npm:4.17.2"
     "@types/express": "npm:^4.17.21"
     "@types/express-session": "npm:^1.18.0"
