@@ -85,6 +85,8 @@ yarn dev:all
 >   - `yarn start:idp` (for the OIDC Identity Provider)
 
 > - **If you are running in GitHub Codespaces or a remote/dev container, make sure to set the port visibility to Public for all relevant ports (e.g., 3000, 3001, 4001, 5000, 5001) so you can access the apps in your browser.**
+>
+> ![Codespaces Visual Showcase](images/codespaces.gif)
 
 ## Optionally, open the application UIs in your browser
 
