@@ -1,6 +1,3 @@
-> ⚠️ **Important:**
-> To run this Cross-App Access demo app, you'll need an Okta Preview account. If you don't already have one, or if you're interested in testing Cross-App Access with Okta as your Identity Provider (IdP), please [sign up for our early access offering](https://www.okta.com/saas-security/sign-up/?_gl=1*pp31c*_gcl_au*NjgzNDkyOTQxLjE3NTA4Nzg2Njk.*_ga*MTk5NjYyODgxMi4xNzUwMjg1MDM3*_ga_QKMSDV5369*czE3NTEyOTY4OTYkbzgkZzEkdDE3NTEyOTg0MjEkajM5JGwwJGgw).
-
 # Identity Assertion Authorization Grant – Node Example
 
 A proof-of-concept for the [Identity Assertion Authorization Grant](https://datatracker.ietf.org/doc/html/draft-parecki-oauth-identity-assertion-authz-grant) flow, demonstrating secure token exchange between SSO-enabled applications using Node.js. For a visual overview, see the [explainer video](https://www.youtube.com/watch?v=I0vdmg79Ga4).
@@ -12,7 +9,6 @@ A proof-of-concept for the [Identity Assertion Authorization Grant](https://data
 - [Quickstart & Dev Setup](#quickstart--dev-setup)
 - [Common Issues](#common-issues)
 - [Troubleshooting](#troubleshooting)
-- [Non-VSCode Alternative Option](#non-vscode-alternative-option)
 - [Dev Tips](#dev-tips)
 - [How to Integrate into an Existing Service](#how-to-integrate-into-an-existing-service)
 
