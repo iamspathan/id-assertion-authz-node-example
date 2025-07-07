@@ -36,7 +36,9 @@ A proof-of-concept for the [Identity Assertion Authorization Grant](https://data
 ```sh
 git clone https://github.com/oktadev/id-assertion-authz-node-example.git
 cd id-assertion-authz-node-example
+git checkout non-okta-idp
 ```
+
 
 - Open VS Code Command Palette and run "Dev Containers: Open Folder in Container". To open Command Palette, select **View** → **Command Palette...**, MacOS keyboard shortcut `Cmd+Shift+P`, or Windows keyboard shortcut `Ctrl+Shift+P`.
 
