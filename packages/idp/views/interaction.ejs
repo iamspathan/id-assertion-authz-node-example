@@ -1,65 +1,76 @@
-<div class="login-client-image">
-  <% if (client.logoUri) { %><img src="<%= client.logoUri %>"><% } %>
+
+<div class="idp-client-image">
+  <% if (client.logoUri) { %><img src="<%= client.logoUri %>" alt="Client Logo"><% } %>
 </div>
 
-<ul>
-<% if ([details.missingOIDCScope, details.missingOIDCClaims, details.missingResourceScopes, details.rar].filter(Boolean).length === 0) { %>
-  <li>the client is asking you to confirm previously given authorization</li>
-<% } %>
+<h2 style="text-align:center; margin-bottom:1.5rem;">Permission Request</h2>
+<div class="idp-permission-list">
+  <ul style="list-style: disc inside; padding-left: 0;">
+    <% if ([details.missingOIDCScope, details.missingOIDCClaims, details.missingResourceScopes, details.rar].filter(Boolean).length === 0) { %>
+      <li>The client is asking you to confirm previously given authorization.</li>
+    <% } %>
 
-<% missingOIDCScope = new Set(details.missingOIDCScope); missingOIDCScope.delete('openid'); missingOIDCScope.delete('offline_access') %>
-<% if (missingOIDCScope.size) { %>
-  <li>scopes:</li>
-  <ul>
-    <% missingOIDCScope.forEach((scope) => { %>
-      <li><%= scope %></li>
-    <% }) %>
-  </ul>
-<% } %>
+    <% missingOIDCScope = new Set(details.missingOIDCScope); missingOIDCScope.delete('openid'); missingOIDCScope.delete('offline_access') %>
+    <% if (missingOIDCScope.size) { %>
+      <li><strong>Scopes:</strong>
+        <ul>
+          <% missingOIDCScope.forEach((scope) => { %>
+            <li><%= scope %></li>
+          <% }) %>
+        </ul>
+      </li>
+    <% } %>
 
-<% missingOIDCClaims = new Set(details.missingOIDCClaims); ['sub', 'sid', 'auth_time', 'acr', 'amr', 'iss'].forEach(Set.prototype.delete.bind(missingOIDCClaims)) %>
-<% if (missingOIDCClaims.size) { %>
-  <li>claims:</li>
-  <ul>
-    <% missingOIDCClaims.forEach((claim) => { %>
-      <li><%= claim %></li>
-    <% }) %>
-  </ul>
-<% } %>
+    <% missingOIDCClaims = new Set(details.missingOIDCClaims); ['sub', 'sid', 'auth_time', 'acr', 'amr', 'iss'].forEach(Set.prototype.delete.bind(missingOIDCClaims)) %>
+    <% if (missingOIDCClaims.size) { %>
+      <li><strong>Claims:</strong>
+        <ul>
+          <% missingOIDCClaims.forEach((claim) => { %>
+            <li><%= claim %></li>
+          <% }) %>
+        </ul>
+      </li>
+    <% } %>
 
-<% missingResourceScopes = details.missingResourceScopes %>
-<% if (missingResourceScopes) { %>
-  <% for (const [indicator, scopes] of Object.entries(details.missingResourceScopes)) { %>
-    <li><%= indicator %>:</li>
-    <ul>
-      <% scopes.forEach((scope) => { %>
-        <li><%= scope %></li>
-      <% }) %>
-    </ul>
-  <% } %>
-<% } %>
+    <% missingResourceScopes = details.missingResourceScopes %>
+    <% if (missingResourceScopes) { %>
+      <% for (const [indicator, scopes] of Object.entries(details.missingResourceScopes)) { %>
+        <li><strong><%= indicator %>:</strong>
+          <ul>
+            <% scopes.forEach((scope) => { %>
+              <li><%= scope %></li>
+            <% }) %>
+          </ul>
+        </li>
+      <% } %>
+    <% } %>
 
-<% rar = details.rar %>
-<% if (rar) { %>
-  <li>authorization_details:</li>
-  <ul>
-    <% for (const { type, ...detail } of details.rar) { %>
-      <li><pre><%= JSON.stringify({ type, ...detail }, null, 4) %></pre></li>
+    <% rar = details.rar %>
+    <% if (rar) { %>
+      <li><strong>Authorization Details:</strong>
+        <ul>
+          <% for (const { type, ...detail } of details.rar) { %>
+            <li><pre style="background:#181818; color:#fff; border-radius:6px; padding:0.5rem; margin:0; font-size:0.95em; overflow-x:auto;">
+              <%= JSON.stringify({ type, ...detail }, null, 4) %>
+            </pre></li>
+          <% } %>
+        </ul>
+      </li>
+    <% } %>
+
+    <% if (params.scope && params.scope.includes('offline_access')) { %>
+      <li>
+        The client is asking to have <strong>offline access</strong> to this authorization
+        <% if ((!details.missingOIDCScope) || !details.missingOIDCScope.includes('offline_access')) { %>
+          (which you've previously granted)
+        <% } %>
+      </li>
     <% } %>
   </ul>
-<% } %>
+</div>
 
-<% if (params.scope && params.scope.includes('offline_access')) { %>
-  <li>
-  the client is asking to have offline access to this authorization
-    <% if ((!details.missingOIDCScope) || !details.missingOIDCScope.includes('offline_access')) { %>
-      (which you've previously granted)
-    <% } %>
-  </li>
-<% } %>
-
-</ul>
-
-<form autocomplete="off" action="/interaction/<%= uid %>/confirm" method="post">
-  <button autofocus type="submit" class="login login-submit">Continue</button>
+<form autocomplete="off" action="/interaction/<%= uid %>/confirm" method="post" style="margin-top:2rem;">
+  <div class="idp-actions">
+    <button autofocus type="submit">Continue</button>
+  </div>
 </form>
