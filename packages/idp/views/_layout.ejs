@@ -1,10 +1,120 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IDP Example</title>
+    <style>
+      body {
+        background: #111;
+        color: #fff;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .idp-container {
+        background: #181818;
+        border-radius: 12px;
+        box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+        padding: 2.5rem 2rem 2rem 2rem;
+        min-width: 340px;
+        max-width: 400px;
+        margin: 2rem auto;
+      }
+      h1, h2, h3 {
+        color: #fff;
+        margin-top: 0;
+        letter-spacing: 1px;
+      }
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+      }
+      input[type="text"], input[type="password"] {
+        background: #222;
+        color: #fff;
+        border: 1px solid #444;
+        border-radius: 6px;
+        padding: 0.8rem 1rem;
+        font-size: 1rem;
+        outline: none;
+        transition: border 0.2s;
+      }
+      input[type="text"]:focus, input[type="password"]:focus {
+        border: 1.5px solid #fff;
+      }
+      button {
+        background: #fff;
+        color: #111;
+        border: none;
+        border-radius: 6px;
+        padding: 0.9rem 1rem;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.2s, color 0.2s;
+      }
+      button:hover {
+        background: #222;
+        color: #fff;
+        border: 1px solid #fff;
+      }
+      .idp-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+      .idp-logo {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: #fff;
+        display: inline-block;
+        margin-bottom: 0.5rem;
+      }
+      .idp-permission-list {
+        background: #222;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        color: #eee;
+        font-size: 0.98rem;
+      }
+      .idp-client-image img {
+        max-width: 60px;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+      }
+      .idp-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+      a, a:visited {
+        color: #fff;
+        text-decoration: underline;
+      }
+    </style>
   </head>
   <body>
-    <h1>IDP Example</h1>
-    <%- body %>
+    <div class="idp-container">
+      <div class="idp-header" style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div class="idp-logo" style="display:flex;align-items:center;justify-content:center;background:#fff; margin: 0 auto;">
+          <!-- SVG lock icon -->
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="10" width="16" height="10" rx="2" fill="#fff" stroke="#111" stroke-width="2"/>
+            <path d="M8 10V8a4 4 0 1 1 8 0v2" stroke="#111" stroke-width="2" fill="none"/>
+            <circle cx="12" cy="15" r="1.5" fill="#111"/>
+          </svg>
+        </div>
+        <h1 style="text-align:center; width:100%; margin: 0.5rem 0 0 0;">Non Okta IDP</h1>
+      </div>
+      <%- body %>
+    </div>
   </body>
 </html>
