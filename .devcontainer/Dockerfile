@@ -1,26 +1,23 @@
-FROM ubuntu:jammy
+FROM alpine:3.20
 
 # Install deps
-RUN apt update && apt upgrade -y && apt install -y \
+RUN apk update && apk upgrade && apk add --no-cache \
     curl \
     mariadb-client \
-    wget
-
-RUN apt-get update && apt-get install -y \
+    wget \
     git \
     gnupg \
     jq \
-    redis-tools
+    redis
 
-# Install Node
-RUN mkdir -p /etc/apt/keyrings
-RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+
+# Install Node.js (LTS) and npm
 ARG NODE_MAJOR=20
-RUN echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
-RUN apt-get update && apt-get install nodejs -y
+RUN apk add --no-cache nodejs="~$NODE_MAJOR" npm
 
 # Install Yarn Package Manager
 RUN npm install --global yarn
+
 
 # Install fly.io which is used for deployments and connecting to production services
 RUN curl -L https://fly.io/install.sh | sh
