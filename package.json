@@ -20,7 +20,12 @@
     "setup:env": "node scripts/setup-env.js",
     "bootstrap": "node scripts/bootstrap.js",
     "dev:all": "concurrently \"yarn dev:wiki\" \"yarn auth:wiki\" \"yarn dev:todo\" \"yarn auth:todo\"",
-    "open:apps": "node scripts/open-apps.js"
+    "dev:mcp": "concurrently \"yarn auth:wiki\" \"yarn dev:todo\" \"yarn auth:todo\" \"yarn dev:mcp-bedrock-client\"",
+    "open:apps": "node scripts/open-apps.js",
+    "build:mcp-bedrock-client": "yarn workspace mcp-bedrock-client build",
+    "dev:mcp-bedrock-client": "yarn workspace mcp-bedrock-client dev",
+    "start:mcp-bedrock-client": "yarn workspace mcp-bedrock-client start",
+    "clean:mcp-bedrock-client": "yarn workspace mcp-bedrock-client clean"
   },
   "author": "",
   "license": "ISC",
@@ -38,10 +43,15 @@
     "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-prettier": "^4.2.1",
     "eslint-plugin-react": "^7.34.1",
-    "eslint-plugin-react-hooks": "^4.6.1"
+    "eslint-plugin-react-hooks": "^4.6.1",
+    "nodemon": "^3.1.10",
+    "tsx": "^4.20.3"
   },
   "workspaces": [
     "./packages/*"
   ],
-  "packageManager": "yarn@4.2.2"
+  "packageManager": "yarn@4.2.2",
+  "dependencies": {
+    "tailwindcss": "^4.1.11"
+  }
 }
