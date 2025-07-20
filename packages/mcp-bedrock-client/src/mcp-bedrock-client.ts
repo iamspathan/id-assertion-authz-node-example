@@ -2,34 +2,31 @@ import {
   BedrockRuntimeClient,
   InvokeModelCommand,
   InvokeModelCommandInput,
-} from "@aws-sdk/client-bedrock-runtime";
-import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import {
-  CallToolRequest,
-  ListToolsRequest,
-} from "@modelcontextprotocol/sdk/types.js";
-import { spawn } from "child_process";
-import * as readline from "readline";
-import { BedrockClientConfig, MCPServerConfig, ChatMessage, ToolCall } from "./types.js";
-import { logger } from "./logger.js";
-import { SYSTEM_PROMPT, BEDROCK_MODELS, DEFAULT_REGION } from "./config.js";
-import { fromEnv } from "@aws-sdk/credential-providers";
+} from '@aws-sdk/client-bedrock-runtime';
+import { fromEnv } from '@aws-sdk/credential-providers';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { BEDROCK_MODELS, DEFAULT_REGION, SYSTEM_PROMPT } from './config.js';
+import { logger } from './logger.js';
+import { BedrockClientConfig, ChatMessage, MCPServerConfig } from './types.js';
 
 export class MCPBedrockClient {
   private bedrockClient: BedrockRuntimeClient;
+
   private mcpClients: Map<string, Client> = new Map();
+
   private modelId: string;
+
   private conversationHistory: ChatMessage[] = [];
 
   constructor(config: BedrockClientConfig = {}) {
     this.bedrockClient = new BedrockRuntimeClient({
       region: config.region || process.env.AWS_REGION || DEFAULT_REGION,
-      credentials: fromEnv()
+      credentials: fromEnv(),
     });
     this.modelId = config.modelId || process.env.BEDROCK_MODEL_ID || BEDROCK_MODELS.CLAUDE_3_HAIKU;
-    
-    logger.info("Initialized MCP Bedrock Client", {
+
+    logger.info('Initialized MCP Bedrock Client', {
       region: config.region || process.env.AWS_REGION || DEFAULT_REGION,
       modelId: this.modelId,
     });
@@ -41,7 +38,7 @@ export class MCPBedrockClient {
   async connectToMCPServer(serverConfig: MCPServerConfig): Promise<void> {
     try {
       logger.loading(`Connecting to MCP server: ${serverConfig.name}`);
-      
+
       // Create transport for the MCP server
       const transport = new StdioClientTransport({
         command: serverConfig.command,
@@ -50,28 +47,30 @@ export class MCPBedrockClient {
       });
 
       // Create MCP client
-      const client = new Client({
-        name: "mcp-bedrock-client",
-        version: "1.0.0",
-      }, {
-        capabilities: {},
-      });
+      const client = new Client(
+        {
+          name: 'mcp-bedrock-client',
+          version: '1.0.0',
+        },
+        {
+          capabilities: {},
+        }
+      );
 
       // Connect to the server
       await client.connect(transport);
-      
+
       // Store the client
       this.mcpClients.set(serverConfig.name, client);
-      
+
       logger.success(`Successfully connected to MCP server: ${serverConfig.name}`);
-      
+
       // List available tools
       const tools = await client.listTools();
-      logger.mcpEvent(serverConfig.name, "tools_discovered", {
+      logger.mcpEvent(serverConfig.name, 'tools_discovered', {
         count: tools.tools?.length || 0,
-        tools: tools.tools?.map(t => t.name) || [],
+        tools: tools.tools?.map((t) => t.name) || [],
       });
-      
     } catch (error) {
       logger.error(`Failed to connect to MCP server ${serverConfig.name}`, error);
       throw error;
@@ -95,7 +94,7 @@ export class MCPBedrockClient {
    */
   async listAllTools(): Promise<Record<string, any[]>> {
     const allTools: Record<string, any[]> = {};
-    
+
     for (const [serverName, client] of this.mcpClients) {
       try {
         const result = await client.listTools();
@@ -105,7 +104,7 @@ export class MCPBedrockClient {
         allTools[serverName] = [];
       }
     }
-    
+
     return allTools;
   }
 
@@ -120,7 +119,7 @@ export class MCPBedrockClient {
 
     try {
       logger.toolCall(serverName, toolName, args);
-      
+
       const result = await client.callTool({
         name: toolName,
         arguments: args,
@@ -141,7 +140,7 @@ export class MCPBedrockClient {
     try {
       // Add user message to conversation history
       this.conversationHistory.push({
-        role: "user",
+        role: 'user',
         content: message,
         timestamp: new Date(),
       });
@@ -151,12 +150,12 @@ export class MCPBedrockClient {
       const toolsDescription = this.formatToolsForClaude(allTools);
 
       // Prepare the prompt with tool information
-      const systemPrompt = SYSTEM_PROMPT + `\n\n${toolsDescription}`;
+      const systemPrompt = `${SYSTEM_PROMPT}\n\n${toolsDescription}`;
 
       // Prepare conversation for Claude
       const conversationText = this.conversationHistory
         .map((msg) => `${msg.role}: ${msg.content}`)
-        .join("\n\n");
+        .join('\n\n');
 
       const fullPrompt = `${systemPrompt}\n\nConversation:\n${conversationText}\n\nassistant:`;
 
@@ -164,39 +163,37 @@ export class MCPBedrockClient {
       const input: InvokeModelCommandInput = {
         modelId: this.modelId,
         body: JSON.stringify({
-          anthropic_version: "bedrock-2023-05-31",
+          anthropic_version: 'bedrock-2023-05-31',
           max_tokens: 4000,
           messages: [
             {
-              role: "user",
+              role: 'user',
               content: fullPrompt,
             },
           ],
         }),
-        contentType: "application/json",
-        accept: "application/json",
+        contentType: 'application/json',
+        accept: 'application/json',
       };
 
       const command = new InvokeModelCommand(input);
       const response = await this.bedrockClient.send(command);
 
       if (!response.body) {
-        throw new Error("No response body from Bedrock");
+        throw new Error('No response body from Bedrock');
       }
 
-      const responseBody = JSON.parse(
-        new TextDecoder().decode(response.body)
-      );
-      
+      const responseBody = JSON.parse(new TextDecoder().decode(response.body));
+
       let assistantMessage = responseBody.content[0].text;
 
       // Check if Claude wants to use a tool
       try {
         // First try to parse the entire message as JSON
         const toolRequest = JSON.parse(assistantMessage);
-        if (toolRequest.action === "tool_call") {
+        if (toolRequest.action === 'tool_call') {
           console.log(`Calling tool: ${toolRequest.tool} on server: ${toolRequest.server}`);
-          
+
           const toolResult = await this.callTool(
             toolRequest.server,
             toolRequest.tool,
@@ -204,31 +201,33 @@ export class MCPBedrockClient {
           );
 
           // Send tool result back to Claude
-          const followUpPrompt = `The tool "${toolRequest.tool}" returned: ${JSON.stringify(toolResult, null, 2)}\n\nPlease provide a natural language response based on this information.`;
-          
+          const followUpPrompt = `The tool "${toolRequest.tool}" returned: ${JSON.stringify(
+            toolResult,
+            null,
+            2
+          )}\n\nPlease provide a natural language response based on this information.`;
+
           const followUpInput: InvokeModelCommandInput = {
             modelId: this.modelId,
             body: JSON.stringify({
-              anthropic_version: "bedrock-2023-05-31",
+              anthropic_version: 'bedrock-2023-05-31',
               max_tokens: 4000,
               messages: [
                 {
-                  role: "user",
+                  role: 'user',
                   content: followUpPrompt,
                 },
               ],
             }),
-            contentType: "application/json",
-            accept: "application/json",
+            contentType: 'application/json',
+            accept: 'application/json',
           };
 
           const followUpCommand = new InvokeModelCommand(followUpInput);
           const followUpResponse = await this.bedrockClient.send(followUpCommand);
-          
+
           if (followUpResponse.body) {
-            const followUpBody = JSON.parse(
-              new TextDecoder().decode(followUpResponse.body)
-            );
+            const followUpBody = JSON.parse(new TextDecoder().decode(followUpResponse.body));
             assistantMessage = followUpBody.content[0].text;
           }
         }
@@ -238,9 +237,9 @@ export class MCPBedrockClient {
           const jsonMatch = assistantMessage.match(/\{[\s\S]*\}/);
           if (jsonMatch) {
             const toolRequest = JSON.parse(jsonMatch[0]);
-            if (toolRequest.action === "tool_call") {
+            if (toolRequest.action === 'tool_call') {
               console.log(`Calling tool: ${toolRequest.tool} on server: ${toolRequest.server}`);
-              
+
               const toolResult = await this.callTool(
                 toolRequest.server,
                 toolRequest.tool,
@@ -248,31 +247,33 @@ export class MCPBedrockClient {
               );
 
               // Send tool result back to Claude
-              const followUpPrompt = `The tool "${toolRequest.tool}" returned: ${JSON.stringify(toolResult, null, 2)}\n\nPlease provide a natural language response based on this information.`;
-              
+              const followUpPrompt = `The tool "${toolRequest.tool}" returned: ${JSON.stringify(
+                toolResult,
+                null,
+                2
+              )}\n\nPlease provide a natural language response based on this information.`;
+
               const followUpInput: InvokeModelCommandInput = {
                 modelId: this.modelId,
                 body: JSON.stringify({
-                  anthropic_version: "bedrock-2023-05-31",
+                  anthropic_version: 'bedrock-2023-05-31',
                   max_tokens: 4000,
                   messages: [
                     {
-                      role: "user",
+                      role: 'user',
                       content: followUpPrompt,
                     },
                   ],
                 }),
-                contentType: "application/json",
-                accept: "application/json",
+                contentType: 'application/json',
+                accept: 'application/json',
               };
 
               const followUpCommand = new InvokeModelCommand(followUpInput);
               const followUpResponse = await this.bedrockClient.send(followUpCommand);
-              
+
               if (followUpResponse.body) {
-                const followUpBody = JSON.parse(
-                  new TextDecoder().decode(followUpResponse.body)
-                );
+                const followUpBody = JSON.parse(new TextDecoder().decode(followUpResponse.body));
                 assistantMessage = followUpBody.content[0].text;
               }
             }
@@ -284,14 +285,14 @@ export class MCPBedrockClient {
 
       // Add assistant response to conversation history
       this.conversationHistory.push({
-        role: "assistant",
+        role: 'assistant',
         content: assistantMessage,
         timestamp: new Date(),
       });
 
       return assistantMessage;
     } catch (error) {
-      logger.error("Error sending message to Bedrock", error);
+      logger.error('Error sending message to Bedrock', error);
       throw error;
     }
   }
@@ -300,21 +301,21 @@ export class MCPBedrockClient {
    * Format available tools for Claude's understanding
    */
   private formatToolsForClaude(allTools: Record<string, any[]>): string {
-    let description = "";
-    
+    let description = '';
+
     for (const [serverName, tools] of Object.entries(allTools)) {
       if (tools.length > 0) {
         description += `\nServer: ${serverName}\n`;
         for (const tool of tools) {
-          description += `- ${tool.name}: ${tool.description || "No description"}\n`;
+          description += `- ${tool.name}: ${tool.description || 'No description'}\n`;
           if (tool.inputSchema) {
             description += `  Parameters: ${JSON.stringify(tool.inputSchema, null, 2)}\n`;
           }
         }
       }
     }
-    
-    return description || "No tools available.";
+
+    return description || 'No tools available.';
   }
 
   /**
@@ -335,7 +336,7 @@ export class MCPBedrockClient {
    * Disconnect from all MCP servers
    */
   async disconnect(): Promise<void> {
-    const disconnectPromises = Array.from(this.mcpClients.keys()).map(serverName =>
+    const disconnectPromises = Array.from(this.mcpClients.keys()).map((serverName) =>
       this.disconnectFromMCPServer(serverName)
     );
     await Promise.all(disconnectPromises);

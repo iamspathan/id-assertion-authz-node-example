@@ -4,12 +4,12 @@ import { MCPServerConfig } from './types';
 export async function getAccessToken(cookie: any): Promise<any> {
   try {
     console.log('🔑 Fetching access token from API...');
-    console.log('cookie is ' + cookie);
+    console.log(`cookie is ${cookie}`);
     const response = await fetch('http://localhost:3000/api/tokens', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Cookie': cookie
+        Cookie: cookie,
       },
     });
     if (!response.ok) {
@@ -55,8 +55,7 @@ export function defaultMcpServers(accessToken: any): MCPServerConfig[] {
       command: '/usr/bin/node',
       args: ['dist/mcp-server/todo-mcp-server.js'],
       env: {
-        ACCESS_TOKEN:
-          accessToken,
+        ACCESS_TOKEN: accessToken,
       },
     },
   ];

@@ -1,11 +1,8 @@
 #!/usr/bin/env node
 
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import {
-  CallToolRequestSchema,
-  ListToolsRequestSchema
-} from "@modelcontextprotocol/sdk/types.js";
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { CallToolRequestSchema, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 
 /**
  * Todo MCP Server
@@ -17,8 +14,8 @@ class TodoMCPServer {
   constructor() {
     this.server = new Server(
       {
-        name: "todo-mcp-server",
-        version: "1.0.0",
+        name: 'todo-mcp-server',
+        version: '1.0.0',
       },
       {
         capabilities: {
@@ -33,95 +30,95 @@ class TodoMCPServer {
 
   private setupToolHandlers(): void {
     // Handle list tools request
-    this.server.setRequestHandler(ListToolsRequestSchema, async () => {
-      return {
-        tools: [
-          {
-            name: "create_reminder",
-            description: "Create a new reminder with a title",
-            inputSchema: {
-              type: "object",
-              properties: {
-                title: {
-                  type: "string",
-                  description: "The title of the reminder"
-                }
+    this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
+      tools: [
+        {
+          name: 'create_reminder',
+          description: 'Create a new reminder with a title',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              title: {
+                type: 'string',
+                description: 'The title of the reminder',
               },
-              required: ["title"]
-            }
+            },
+            required: ['title'],
           },
-          {
-            name: "update_reminder",
-            description: "Update a reminder's status",
-            inputSchema: {
-              type: "object",
-              properties: {
-                title: {
-                  type: "string",
-                  description: "The title of the reminder to update"
-                },
-                status: {
-                  type: "string",
-                  description: "The new status for the reminder",
-                  enum: ["pending", "completed", "cancelled"]
-                }
+        },
+        {
+          name: 'update_reminder',
+          description: "Update a reminder's status",
+          inputSchema: {
+            type: 'object',
+            properties: {
+              title: {
+                type: 'string',
+                description: 'The title of the reminder to update',
               },
-              required: ["title", "status"]
-            }
-          },
-          {
-            name: "print_env_variables",
-            description: "Print all environment variables available to the server",
-            inputSchema: {
-              type: "object",
-              properties: {},
-              required: []
-            }
-          },
-          {
-            name: "welcome_to_okta",
-            description: "Greet the user with a welcome message to Okta",
-            inputSchema: {
-              type: "object",
-              properties: {
-                userName: {
-                  type: "string",
-                  description: "The user's name for personalized greeting (optional)"
-                }
+              status: {
+                type: 'string',
+                description: 'The new status for the reminder',
+                enum: ['pending', 'completed', 'cancelled'],
               },
-              required: []
-            }
+            },
+            required: ['title', 'status'],
           },
-          {
-            name: "list_todos",
-            description: "Fetch a list of all todos from the API, show only incompleted task unless asked otherwise",
-            inputSchema: {
-              type: "object",
-              properties: {},
-              required: []
-            }
+        },
+        {
+          name: 'print_env_variables',
+          description: 'Print all environment variables available to the server',
+          inputSchema: {
+            type: 'object',
+            properties: {},
+            required: [],
           },
-          {
-            name: "add_todos",
-            description: "Add new todos and it requires a name of todo as string",
-            inputSchema: {
-              type: "object",
-              properties: {},
-              required: ["todoName"]
-            }
+        },
+        {
+          name: 'welcome_to_okta',
+          description: 'Greet the user with a welcome message to Okta',
+          inputSchema: {
+            type: 'object',
+            properties: {
+              userName: {
+                type: 'string',
+                description: "The user's name for personalized greeting (optional)",
+              },
+            },
+            required: [],
           },
-          {
-            name: "update_todos",
-            description: "user may ask you to tick it off or get off my plate or Update status of todos requires id and status, convert todoStatus to true or false when calling the tool",
-            inputSchema: {
-              type: "object",
-              properties: {},
-              required: ["id", "todoStatus"]
-            }
-          }
-        ]
-      };
-    });
+        },
+        {
+          name: 'list_todos',
+          description:
+            'Fetch a list of all todos from the API, show only incompleted task unless asked otherwise',
+          inputSchema: {
+            type: 'object',
+            properties: {},
+            required: [],
+          },
+        },
+        {
+          name: 'add_todos',
+          description: 'Add new todos and it requires a name of todo as string',
+          inputSchema: {
+            type: 'object',
+            properties: {},
+            required: ['todoName'],
+          },
+        },
+        {
+          name: 'update_todos',
+          description:
+            'user may ask you to tick it off or get off my plate or Update status of todos requires id and status, convert todoStatus to true or false when calling the tool',
+          inputSchema: {
+            type: 'object',
+            properties: {},
+            required: ['id', 'todoStatus'],
+          },
+        },
+      ],
+    }));
 
     // Handle tool calls
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
@@ -130,27 +127,33 @@ class TodoMCPServer {
       console.error(`🔧 Tool call received: ${name} with args:`, args);
 
       try {
-        if (name === "create_reminder") {
+        if (name === 'create_reminder') {
           console.error('📝 Executing create_reminder tool');
           return await this.createReminder(args as { title: string });
-        } else if (name === "update_reminder") {
+        }
+        if (name === 'update_reminder') {
           console.error('📝 Executing update_reminder tool');
           return await this.updateReminder(args as { title: string; status: string });
-        } else if (name === "print_env_variables") {
+        }
+        if (name === 'print_env_variables') {
           console.error('🔍 Executing print_env_variables tool');
           return this.printEnvVariables();
-        } else if (name === "welcome_to_okta") {
+        }
+        if (name === 'welcome_to_okta') {
           console.error('👋 Executing welcome_to_okta tool');
           return this.welcomeToOkta(args as { userName?: string });
-        } else if (name === "list_todos") {
+        }
+        if (name === 'list_todos') {
           console.error('📋 Executing list_todos tool');
           return await this.listTodos();
-        } else if (name === "add_todos") {
+        }
+        if (name === 'add_todos') {
           console.error('📋 Executing add_todos tool');
-          return await this.addTodos(args as {todoName: string});
-        } else if (name === "update_todos") {
+          return await this.addTodos(args as { todoName: string });
+        }
+        if (name === 'update_todos') {
           console.error('📋 Executing update_todos tool');
-          return await this.updateTodos(args as { id: Number, todoStatus: boolean });
+          return await this.updateTodos(args as { id: Number; todoStatus: boolean });
         }
 
         console.error(`❌ Unknown tool: ${name}`);
@@ -161,11 +164,11 @@ class TodoMCPServer {
         return {
           content: [
             {
-              type: "text",
-              text: `Error: ${errorMessage}`
-            }
+              type: 'text',
+              text: `Error: ${errorMessage}`,
+            },
           ],
-          isError: true
+          isError: true,
         };
       }
     });
@@ -183,8 +186,8 @@ class TodoMCPServer {
         },
         body: JSON.stringify({
           title: args.title,
-          status: 'pending'
-        })
+          status: 'pending',
+        }),
       });
 
       if (!response.ok) {
@@ -196,10 +199,12 @@ class TodoMCPServer {
       return {
         content: [
           {
-            type: "text",
-            text: `✅ Reminder created successfully: "${args.title}"\nStatus: pending\nResponse: ${JSON.stringify(result, null, 2)}`
-          }
-        ]
+            type: 'text',
+            text: `✅ Reminder created successfully: "${
+              args.title
+            }"\nStatus: pending\nResponse: ${JSON.stringify(result, null, 2)}`,
+          },
+        ],
       };
     } catch (error) {
       // If API call fails, simulate success for demo purposes
@@ -208,10 +213,10 @@ class TodoMCPServer {
       return {
         content: [
           {
-            type: "text",
-            text: `✅ Reminder created (simulated): "${args.title}"\nStatus: pending\nNote: API endpoint not available, using mock response`
-          }
-        ]
+            type: 'text',
+            text: `✅ Reminder created (simulated): "${args.title}"\nStatus: pending\nNote: API endpoint not available, using mock response`,
+          },
+        ],
       };
     }
   }
@@ -225,12 +230,12 @@ class TodoMCPServer {
         method: 'GET`',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.ACCESS_TOKEN || ''}`
+          Authorization: `Bearer ${process.env.ACCESS_TOKEN || ''}`,
         },
         body: JSON.stringify({
           title: args.title,
-          status: args.status
-        })
+          status: args.status,
+        }),
       });
 
       if (!response.ok) {
@@ -242,10 +247,12 @@ class TodoMCPServer {
       return {
         content: [
           {
-            type: "text",
-            text: `✅ Reminder updated successfully: "${args.title}"\nNew status: ${args.status}\nResponse: ${JSON.stringify(result, null, 2)}`
-          }
-        ]
+            type: 'text',
+            text: `✅ Reminder updated successfully: "${args.title}"\nNew status: ${
+              args.status
+            }\nResponse: ${JSON.stringify(result, null, 2)}`,
+          },
+        ],
       };
     } catch (error) {
       // If API call fails, simulate success for demo purposes
@@ -254,10 +261,10 @@ class TodoMCPServer {
       return {
         content: [
           {
-            type: "text",
-            text: `✅ Reminder updated (simulated): "${args.title}"\nNew status: ${args.status}\nNote: API endpoint not available, using mock response`
-          }
-        ]
+            type: 'text',
+            text: `✅ Reminder updated (simulated): "${args.title}"\nNew status: ${args.status}\nNote: API endpoint not available, using mock response`,
+          },
+        ],
       };
     }
   }
@@ -271,13 +278,12 @@ class TodoMCPServer {
     return {
       content: [
         {
-          type: "text",
-          text: `🔐 ACCESS_TOKEN: ${accessToken || 'Not configured'}`
-        }
-      ]
+          type: 'text',
+          text: `🔐 ACCESS_TOKEN: ${accessToken || 'Not configured'}`,
+        },
+      ],
     };
   }
-
 
   private welcomeToOkta(args?: { userName?: string }) {
     try {
@@ -296,13 +302,14 @@ class TodoMCPServer {
       const result = {
         content: [
           {
-            type: "text",
-            text: `🎉 ${personalizedGreeting} Welcome to Okta!\n\n` +
-                  `🔐 Your Okta Organization: ${oktaOrgUrl || 'Not configured'}\n\n` +
-                  `✨ We're excited to have you here! Okta provides secure identity and access management solutions.\n\n` +
-                  `🚀 Ready to get started with your secure authentication journey!`
-          }
-        ]
+            type: 'text',
+            text:
+              `🎉 ${personalizedGreeting} Welcome to Okta!\n\n` +
+              `🔐 Your Okta Organization: ${oktaOrgUrl || 'Not configured'}\n\n` +
+              `✨ We're excited to have you here! Okta provides secure identity and access management solutions.\n\n` +
+              `🚀 Ready to get started with your secure authentication journey!`,
+          },
+        ],
       };
 
       console.error('✅ Welcome to Okta greeting completed');
@@ -314,10 +321,12 @@ class TodoMCPServer {
       return {
         content: [
           {
-            type: "text",
-            text: `❌ Error generating welcome greeting: ${error instanceof Error ? error.message : 'Unknown error'}`
-          }
-        ]
+            type: 'text',
+            text: `❌ Error generating welcome greeting: ${
+              error instanceof Error ? error.message : 'Unknown error'
+            }`,
+          },
+        ],
       };
     }
   }
@@ -333,10 +342,10 @@ class TodoMCPServer {
         return {
           content: [
             {
-              type: "text",
-              text: `❌ Error: ACCESS_TOKEN not configured. Cannot fetch todos.`
-            }
-          ]
+              type: 'text',
+              text: `❌ Error: ACCESS_TOKEN not configured. Cannot fetch todos.`,
+            },
+          ],
         };
       }
 
@@ -345,8 +354,8 @@ class TodoMCPServer {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
       if (!response.ok) {
@@ -361,10 +370,12 @@ class TodoMCPServer {
       return {
         content: [
           {
-            type: "text",
-            text: `📋 **Todos List**\n\n${JSON.stringify(todos, null, 2)}\n\n✅ Total todos: ${Array.isArray(todos) ? todos.length : 'N/A'}`
-          }
-        ]
+            type: 'text',
+            text: `📋 **Todos List**\n\n${JSON.stringify(todos, null, 2)}\n\n✅ Total todos: ${
+              Array.isArray(todos) ? todos.length : 'N/A'
+            }`,
+          },
+        ],
       };
     } catch (error) {
       console.error(`❌ Failed to fetch todos: ${error}`);
@@ -372,10 +383,12 @@ class TodoMCPServer {
       return {
         content: [
           {
-            type: "text",
-            text: `❌ Error fetching todos: ${error instanceof Error ? error.message : 'Unknown error'}\n\nNote: Make sure the API endpoint http://localhost:3001/api/todo is available and ACCESS_TOKEN is valid.`
-          }
-        ]
+            type: 'text',
+            text: `❌ Error fetching todos: ${
+              error instanceof Error ? error.message : 'Unknown error'
+            }\n\nNote: Make sure the API endpoint http://localhost:3001/api/todo is available and ACCESS_TOKEN is valid.`,
+          },
+        ],
       };
     }
   }
@@ -391,10 +404,10 @@ class TodoMCPServer {
         return {
           content: [
             {
-              type: "text",
-              text: `❌ Error: ACCESS_TOKEN not configured. Cannot fetch todos.`
-            }
-          ]
+              type: 'text',
+              text: `❌ Error: ACCESS_TOKEN not configured. Cannot fetch todos.`,
+            },
+          ],
         };
       }
 
@@ -406,8 +419,8 @@ class TodoMCPServer {
         }),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
       if (!response.ok) {
@@ -422,10 +435,12 @@ class TodoMCPServer {
       return {
         content: [
           {
-            type: "text",
-            text: `📋 **Todos List**\n\n${JSON.stringify(todos, null, 2)}\n\n✅ Total todos: ${Array.isArray(todos) ? todos.length : 'N/A'}`
-          }
-        ]
+            type: 'text',
+            text: `📋 **Todos List**\n\n${JSON.stringify(todos, null, 2)}\n\n✅ Total todos: ${
+              Array.isArray(todos) ? todos.length : 'N/A'
+            }`,
+          },
+        ],
       };
     } catch (error) {
       console.error(`❌ Failed to fetch todos: ${error}`);
@@ -433,15 +448,17 @@ class TodoMCPServer {
       return {
         content: [
           {
-            type: "text",
-            text: `❌ Error fetching todos: ${error instanceof Error ? error.message : 'Unknown error'}\n\nNote: Make sure the API endpoint http://localhost:3001/api/todo is available and ACCESS_TOKEN is valid.`
-          }
-        ]
+            type: 'text',
+            text: `❌ Error fetching todos: ${
+              error instanceof Error ? error.message : 'Unknown error'
+            }\n\nNote: Make sure the API endpoint http://localhost:3001/api/todo is available and ACCESS_TOKEN is valid.`,
+          },
+        ],
       };
     }
   }
 
-  private async updateTodos(todo: { id: Number, todoStatus: boolean }) {
+  private async updateTodos(todo: { id: Number; todoStatus: boolean }) {
     try {
       console.error('📋 Fetching todos from API...');
 
@@ -452,10 +469,10 @@ class TodoMCPServer {
         return {
           content: [
             {
-              type: "text",
-              text: `❌ Error: ACCESS_TOKEN not configured. Cannot fetch todos.`
-            }
-          ]
+              type: 'text',
+              text: `❌ Error: ACCESS_TOKEN not configured. Cannot fetch todos.`,
+            },
+          ],
         };
       }
 
@@ -463,13 +480,13 @@ class TodoMCPServer {
       const response = await fetch(`http://localhost:3001/api/todos/${todo.id}`, {
         method: 'PUT',
         body: JSON.stringify({
-          "id":todo.id,
-          "completed":todo.todoStatus,
+          id: todo.id,
+          completed: todo.todoStatus,
         }),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
       if (!response.ok) {
@@ -484,10 +501,12 @@ class TodoMCPServer {
       return {
         content: [
           {
-            type: "text",
-            text: `📋 **Todos List**\n\n${JSON.stringify(todos, null, 2)}\n\n✅ Total todos: ${Array.isArray(todos) ? todos.length : 'N/A'}`
-          }
-        ]
+            type: 'text',
+            text: `📋 **Todos List**\n\n${JSON.stringify(todos, null, 2)}\n\n✅ Total todos: ${
+              Array.isArray(todos) ? todos.length : 'N/A'
+            }`,
+          },
+        ],
       };
     } catch (error) {
       console.error(`❌ Failed to fetch todos: ${error}`);
@@ -495,21 +514,23 @@ class TodoMCPServer {
       return {
         content: [
           {
-            type: "text",
-            text: `❌ Error fetching todos: ${error instanceof Error ? error.message : 'Unknown error'}\n\nNote: Make sure the API endpoint http://localhost:3001/api/todo is available and ACCESS_TOKEN is valid.`
-          }
-        ]
+            type: 'text',
+            text: `❌ Error fetching todos: ${
+              error instanceof Error ? error.message : 'Unknown error'
+            }\n\nNote: Make sure the API endpoint http://localhost:3001/api/todo is available and ACCESS_TOKEN is valid.`,
+          },
+        ],
       };
     }
   }
 
   private setupErrorHandler(): void {
     this.server.onerror = (error) => {
-      console.error("[Todo MCP Server Error]", error);
+      console.error('[Todo MCP Server Error]', error);
     };
 
     process.on('SIGINT', async () => {
-      console.log("\nShutting down Todo MCP Server...");
+      console.log('\nShutting down Todo MCP Server...');
       await this.server.close();
       process.exit(0);
     });
@@ -520,13 +541,13 @@ class TodoMCPServer {
     await this.server.connect(transport);
 
     // This will never resolve - the server runs indefinitely
-    console.error("Todo MCP Server running on stdio");
+    console.error('Todo MCP Server running on stdio');
   }
 }
 
 // Create and run the server
 const server = new TodoMCPServer();
 server.run().catch((error: any) => {
-  console.error("Failed to run Todo MCP Server:", error);
+  console.error('Failed to run Todo MCP Server:', error);
   process.exit(1);
 });
