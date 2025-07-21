@@ -15,6 +15,7 @@ RUN echo "Starting core dependency installation at $(date)" && \
         gnupg \
         jq \
         redis \
+        openssl \
     && echo "Finished core dependency installation at $(date)"
 
 # Install Node.js and npm (from Alpine repositories)
