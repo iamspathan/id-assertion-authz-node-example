@@ -52,7 +52,6 @@
   ],
   "packageManager": "yarn@4.2.2",
   "dependencies": {
-    "depcheck": "^1.4.7",
     "tailwindcss": "^4.1.11"
   }
 }
