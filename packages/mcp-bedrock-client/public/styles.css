@@ -33,7 +33,7 @@ body {
 /* App Layout */
 .app {
     display: grid;
-    grid-template-areas: 
+    grid-template-areas:
         "header header"
         "sidebar main";
     grid-template-rows: 60px 1fr;
@@ -650,13 +650,13 @@ body {
 /* Responsive Design */
 @media (max-width: 768px) {
     .app {
-        grid-template-areas: 
+        grid-template-areas:
             "header"
             "main";
         grid-template-rows: 60px 1fr;
         grid-template-columns: 1fr;
     }
-    
+
     .sidebar {
         position: fixed;
         top: 60px;
@@ -666,11 +666,11 @@ body {
         z-index: 100;
         transform: translateX(-100%);
     }
-    
+
     .sidebar.show {
         transform: translateX(0);
     }
-    
+
     .main-content {
         grid-area: main;
     }
