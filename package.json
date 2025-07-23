@@ -31,8 +31,8 @@
   "license": "ISC",
   "type": "module",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@typescript-eslint/parser": "^6.21.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
     "eslint-config-airbnb": "^19.0.4",
@@ -45,13 +45,11 @@
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.1",
     "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
     "tsx": "^4.20.3"
   },
   "workspaces": [
     "./packages/*"
   ],
-  "packageManager": "yarn@4.2.2",
-  "dependencies": {
-    "tailwindcss": "^4.1.11"
-  }
+  "packageManager": "yarn@4.2.2"
 }
