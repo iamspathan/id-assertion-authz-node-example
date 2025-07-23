@@ -15,7 +15,7 @@
             <div class="header-content">
                 <h1 class="logo">
                     <span class="logo-icon">🤖</span>
-                    MCP Bedrock Client
+                    Agent0
                 </h1>
                 <div class="status-indicator">
                     <div class="status-dot" id="connectionStatus"></div>
@@ -77,6 +77,12 @@
                 <button id="getHistory" class="btn btn-secondary">Show History</button>
             </div>
         </aside>
+        <!-- Sidebar Hover Area (for reopening when collapsed) -->
+        <div id="sidebarHoverArea" style="position:fixed;left:0;top:0;bottom:0;width:16px;z-index:1000;display:none;cursor:pointer;align-items:center;justify-content:center;">
+            <button id="expandSidebarBtn" style="position:absolute;left:0;top:50%;transform:translateY(-50%);background:#fff;border:none;border-radius:0 4px 4px 0;box-shadow:1px 0 4px rgba(0,0,0,0.08);padding:4px 6px;cursor:pointer;">
+                &rarr;
+            </button>
+        </div>
 
         <!-- Main Chat Area -->
         <main class="main-content">
@@ -101,7 +107,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="typing-indicator" id="typingIndicator" style="display: none;">
                     <div class="typing-dots">
                         <span></span>
@@ -113,8 +119,8 @@
 
                 <div class="input-container">
                     <div class="input-wrapper">
-                        <textarea 
-                            id="messageInput" 
+                        <textarea
+                            id="messageInput"
                             placeholder="Type your message here... (Shift+Enter for new line)"
                             rows="1"
                             disabled
@@ -128,6 +134,11 @@
                 </div>
             </div>
         </main>
+
+        <!-- Right Panel (placeholder, hidden by default) -->
+        <aside class="right-panel" id="rightPanel" style="display:none;">
+            <!-- Add right panel content here if needed -->
+        </aside>
     </div>
 
     <!-- Modal for History -->
@@ -144,5 +155,89 @@
     </div>
 
     <script src="app.js"></script>
+    <script>
+    // Sidebar collapse/expand state
+    const sidebar = document.getElementById('sidebar');
+    const collapseBtn = document.getElementById('collapseSidebar');
+    const sidebarHoverArea = document.getElementById('sidebarHoverArea');
+    const expandSidebarBtn = document.getElementById('expandSidebarBtn');
+    const app = document.querySelector('.app');
+    let sidebarCollapsed = false;
+
+    function setSidebarState(collapsed) {
+        sidebarCollapsed = collapsed;
+        if (collapsed) {
+            sidebar.style.transform = 'translateX(-100%)';
+            sidebarHoverArea.style.display = 'flex';
+            expandSidebarBtn.style.display = 'block';
+            app.classList.add('sidebar-collapsed');
+            collapseBtn.textContent = '→';
+            localStorage.setItem('sidebarCollapsed', '1');
+        } else {
+            sidebar.style.transform = '';
+            sidebarHoverArea.style.display = 'none';
+            expandSidebarBtn.style.display = 'none';
+            app.classList.remove('sidebar-collapsed');
+            collapseBtn.textContent = '←';
+            // Remove the collapsed state from storage so default is always open
+            localStorage.removeItem('sidebarCollapsed');
+        }
+    }
+
+    collapseBtn.addEventListener('click', () => setSidebarState(true));
+    expandSidebarBtn.addEventListener('click', () => setSidebarState(false));
+
+    // Always default to expanded unless user explicitly closes sidebar
+    window.addEventListener('DOMContentLoaded', () => {
+        setSidebarState(false);
+    });
+
+    // Optional: ESC to close right panel
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.getElementById('rightPanel').style.display = 'none';
+        }
+    });
+    </script>
+    <style>
+    /* Sidebar transition and collapsed state */
+    .sidebar {
+        transition: transform 0.2s cubic-bezier(.4,0,.2,1);
+        will-change: transform;
+        z-index: 1001;
+        /* ...existing styles... */
+    }
+    /* Right panel basic style */
+    .right-panel {
+        position: fixed;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 320px;
+        background: #fff;
+        box-shadow: -2px 0 8px rgba(0,0,0,0.08);
+        z-index: 1002;
+        /* ...add more styles as needed... */
+    }
+    #sidebarHoverArea {
+        display: none;
+        align-items: center;
+        justify-content: flex-start;
+        background: transparent;
+        transition: background 0.2s;
+    }
+    #sidebarHoverArea button {
+        font-size: 18px;
+        color: #333;
+        outline: none;
+        border: none;
+        background: #fff;
+        transition: background 0.2s;
+        display: block;
+    }
+    #sidebarHoverArea button:hover {
+        background: #e0e0e0;
+    }
+    </style>
 </body>
 </html>

@@ -8,10 +8,10 @@ class MCPClient {
         this.authState = { isAuthenticated: false };
         this.bedrockState = { isInitialized: false };
         this.serverConnectionStates = new Map(); // Track connection states
-        
+
         // Restore pre-auth state if available
         this.restorePreAuthState();
-        
+
         this.initializeElements();
         this.attachEventListeners();
         this.loadAvailableServers();
@@ -40,31 +40,31 @@ class MCPClient {
         // Status elements
         this.statusDot = document.getElementById('connectionStatus');
         this.statusText = document.getElementById('statusText');
-        
+
         // Form elements
         this.regionSelect = document.getElementById('region');
         this.modelSelect = document.getElementById('modelId');
         this.initializeBtn = document.getElementById('initializeBtn');
         this.connectIdpBtn = document.getElementById('connectIdpBtn');
-        
+
         // Chat elements
         this.messages = document.getElementById('messages');
         this.messageInput = document.getElementById('messageInput');
         this.sendBtn = document.getElementById('sendBtn');
         this.typingIndicator = document.getElementById('typingIndicator');
-        
+
         // Sidebar elements
         this.sidebar = document.getElementById('sidebar');
         this.collapseSidebar = document.getElementById('collapseSidebar');
         this.serversList = document.getElementById('serversList');
         this.toolsList = document.getElementById('toolsList');
-        
+
         // Button elements
         this.refreshServers = document.getElementById('refreshServers');
         this.getTools = document.getElementById('getTools');
         this.clearHistory = document.getElementById('clearHistory');
         this.getHistory = document.getElementById('getHistory');
-        
+
         // Modal elements
         this.historyModal = document.getElementById('historyModal');
         this.closeHistoryModal = document.getElementById('closeHistoryModal');
@@ -75,7 +75,7 @@ class MCPClient {
         // Socket connection
         this.initializeBtn.addEventListener('click', () => this.initializeConnection());
         this.connectIdpBtn.addEventListener('click', () => this.connectToIDP());
-        
+
         // Chat functionality
         this.sendBtn.addEventListener('click', () => this.sendMessage());
         this.messageInput.addEventListener('keydown', (e) => {
@@ -84,23 +84,23 @@ class MCPClient {
                 this.sendMessage();
             }
         });
-        
+
         // Auto-resize textarea
         this.messageInput.addEventListener('input', () => this.autoResizeTextarea());
-        
+
         // Sidebar functionality
         this.collapseSidebar.addEventListener('click', () => this.toggleSidebar());
         this.refreshServers.addEventListener('click', () => this.loadAvailableServers());
         this.getTools.addEventListener('click', () => this.getTools());
         this.clearHistory.addEventListener('click', () => this.clearHistory());
         this.getHistory.addEventListener('click', () => this.showHistory());
-        
+
         // Modal functionality
         this.closeHistoryModal.addEventListener('click', () => this.hideHistory());
         this.historyModal.addEventListener('click', (e) => {
             if (e.target === this.historyModal) this.hideHistory();
         });
-        
+
         // Escape key to close modal
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.historyModal.classList.contains('show')) {
@@ -114,26 +114,26 @@ class MCPClient {
             // Check if we're returning from authentication
             const urlParams = new URLSearchParams(window.location.search);
             const authStatus = urlParams.get('auth');
-            
+
             // Always check session status from server first
             const response = await fetch('/api/session/status');
             const sessionData = await response.json();
-            
+
             this.sessionId = sessionData.sessionId;
             this.authState = sessionData.authState || { isAuthenticated: false };
             this.bedrockState = sessionData.bedrockState || { isInitialized: false };
-            
+
             console.log('Session status:', sessionData);
-            
+
             if (authStatus === 'success') {
                 // Clear the URL parameter
                 window.history.replaceState({}, document.title, window.location.pathname);
                 this.addMessage('system', 'Authentication completed successfully! Welcome back.');
-                
+
                 // Force update UI
                 this.updateAuthUI();
                 this.updateBedrockUI();
-                
+
             } else if (authStatus === 'error') {
                 window.history.replaceState({}, document.title, window.location.pathname);
                 this.addMessage('error', 'Authentication failed. Please try again.');
@@ -141,20 +141,20 @@ class MCPClient {
                 // Update UI based on current session state
                 this.updateAuthUI();
                 this.updateBedrockUI();
-                
+
                 if (this.bedrockState.isInitialized) {
                     this.addMessage('system', 'Existing Bedrock session found - restoring connection...');
                     // Don't auto-connect socket here, let user click reconnect
                 }
-                
+
                 if (this.authState.isAuthenticated) {
                     this.addMessage('system', 'Existing authentication session found - already authenticated');
                 }
             }
-            
+
             // Connect socket for future use (but don't auto-initialize Bedrock)
             this.connectSocket();
-            
+
         } catch (error) {
             console.error('Failed to check session status:', error);
             // Fall back to connecting socket anyway
@@ -173,12 +173,12 @@ class MCPClient {
 
         this.socket = io();
         this.setupSocketHandlers();
-        
+
         // When socket connects, check if we can restore an existing session
         this.socket.on('connect', () => {
             console.log('Socket connected');
             this.socket.emit('check_session');
-            
+
             // If we have an existing Bedrock session, try to restore it
             if (this.bedrockState.isInitialized) {
                 console.log('Attempting to restore existing Bedrock session...');
@@ -189,7 +189,7 @@ class MCPClient {
 
     connectSocketAndRestore() {
         this.connectSocket();
-        
+
         // Wait for socket to connect, then restore session
         this.socket.on('connect', () => {
             setTimeout(() => {
@@ -205,7 +205,7 @@ class MCPClient {
 
         // Restore the existing session by emitting a check_session first
         this.socket.emit('check_session');
-        
+
         // Set UI state based on existing session
         this.isInitialized = true;
         this.messageInput.disabled = false;
@@ -233,7 +233,7 @@ class MCPClient {
                 this.initializeBtn.textContent = 'Reconnect';
                 this.addMessage('system', '✅ Successfully connected to AWS Bedrock! You can now start chatting.');
                 this.clearWelcomeMessage();
-                
+
                 // Update session data
                 if (response.sessionId) {
                     this.sessionId = response.sessionId;
@@ -245,13 +245,13 @@ class MCPClient {
                     this.authState = response.authState;
                     this.updateAuthUI();
                 }
-                
+
                 // Save Bedrock state to session
                 this.saveBedrockState({
                     region: this.regionSelect.value,
                     modelId: this.modelSelect.value
                 });
-                
+
                 // Auto-connect to available MCP servers
                 this.autoConnectToServers();
             } else {
@@ -326,7 +326,7 @@ class MCPClient {
                 this.authState = response.authState || { isAuthenticated: true };
                 this.updateAuthUI();
                 this.addMessage('system', 'Authentication completed successfully!');
-                
+
                 // Save auth state to session
                 if (response.authState) {
                     this.saveAuthState(response.authState);
@@ -342,7 +342,7 @@ class MCPClient {
                 this.sessionId = response.sessionId;
                 this.authState = response.authState || { isAuthenticated: false };
                 this.bedrockState = response.bedrockState || { isInitialized: false };
-                
+
                 // Update UI based on session state
                 this.updateAuthUI();
                 this.updateBedrockUI();
@@ -379,7 +379,7 @@ class MCPClient {
                 this.initializeBtn.textContent = 'Reconnect';
                 this.addMessage('system', '✅ Bedrock session restored successfully!');
                 this.clearWelcomeMessage();
-                
+
                 // Update session data
                 if (response.sessionId) {
                     this.sessionId = response.sessionId;
@@ -391,7 +391,7 @@ class MCPClient {
                     this.authState = response.authState;
                     this.updateAuthUI();
                 }
-                
+
                 // Auto-connect to available MCP servers after session restore
                 this.autoConnectToServers();
             } else {
@@ -404,7 +404,7 @@ class MCPClient {
 
     updateAuthUI() {
         console.log('Updating auth UI with state:', this.authState);
-        
+
         if (this.authState.isAuthenticated) {
             this.connectIdpBtn.textContent = 'Authenticated ✓';
             this.connectIdpBtn.disabled = true;
@@ -472,7 +472,7 @@ class MCPClient {
 
         // Ensure socket is connected
         this.connectSocket();
-        
+
         // If socket is already connected, initialize immediately
         if (this.socket && this.socket.connected) {
             this.socket.emit('initialize', {
@@ -509,9 +509,9 @@ class MCPClient {
     addMessage(type, content) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}`;
-        
+
         const time = new Date().toLocaleTimeString();
-        
+
         if (type === 'system') {
             messageDiv.innerHTML = `
                 <div class="message-content" style="background: #374151; color: #e5e7eb; text-align: center; font-style: italic;">
@@ -536,7 +536,7 @@ class MCPClient {
                 </div>
             `;
         }
-        
+
         this.messages.appendChild(messageDiv);
         this.messages.scrollTop = this.messages.scrollHeight;
     }
@@ -575,7 +575,7 @@ class MCPClient {
 
     toggleSidebar() {
         document.querySelector('.app').classList.toggle('sidebar-collapsed');
-        this.collapseSidebar.textContent = 
+        this.collapseSidebar.textContent =
             document.querySelector('.app').classList.contains('sidebar-collapsed') ? '→' : '←';
     }
 
@@ -591,24 +591,24 @@ class MCPClient {
 
     renderServersList() {
         this.serversList.innerHTML = '';
-        
+
         this.availableServers.forEach(server => {
             const serverDiv = document.createElement('div');
             serverDiv.className = 'server-item';
-            
+
             const connectionState = this.serverConnectionStates.get(server.name) || 'disconnected';
             const isConnected = this.connectedServers.has(server.name);
-            
+
             // Add connection indicator icon
-            const statusIcon = connectionState === 'connected' ? '🟢' : 
-                             connectionState === 'connecting' ? '🟡' : 
+            const statusIcon = connectionState === 'connected' ? '🟢' :
+                             connectionState === 'connecting' ? '🟡' :
                              connectionState === 'disconnecting' ? '�' : '�🔴';
-            
+
             const clickAction = isConnected ? 'Click to disconnect' : 'Click to connect';
-            
+
             // Clean up command display - hide full path and show just the server type
             const displayCommand = this.getDisplayCommand(server);
-            
+
             serverDiv.innerHTML = `
                 <div class="server-info">
                     <div class="server-name">${statusIcon} ${server.name}</div>
@@ -620,7 +620,7 @@ class MCPClient {
                     <div class="server-hint">${clickAction}</div>
                 </div>
             `;
-            
+
             serverDiv.addEventListener('click', () => {
                 if (isConnected) {
                     this.disconnectFromServer(server.name);
@@ -630,7 +630,7 @@ class MCPClient {
             });
             this.serversList.appendChild(serverDiv);
         });
-        
+
         // Add connection summary
         const summaryDiv = document.createElement('div');
         summaryDiv.className = 'server-summary';
@@ -656,13 +656,13 @@ class MCPClient {
             }
             return 'Node.js Server';
         }
-        
+
         // For other commands, show just the base command
         if (server.command) {
             const baseCommand = server.command.split('/').pop();
             return `${baseCommand} ${(server.args || []).join(' ')}`;
         }
-        
+
         return 'MCP Server';
     }
 
@@ -689,16 +689,16 @@ class MCPClient {
             this.addMessage('system', `Server ${serverName} is not connected`);
             return;
         }
-        
+
         this.addMessage('system', `🔌 Disconnecting from MCP server: ${serverName}...`);
         this.serverConnectionStates.set(serverName, 'disconnecting');
         this.updateServerStatus(serverName, 'disconnecting');
         this.connectedServers.delete(serverName);
         this.updateServerConnectionCount();
-        
+
         // Emit disconnect event to server
         this.socket.emit('disconnect_server', { name: serverName });
-        
+
         // Update UI after a brief delay
         setTimeout(() => {
             this.serverConnectionStates.set(serverName, 'disconnected');
@@ -717,9 +717,9 @@ class MCPClient {
                     statusElement.className = `server-status ${status}`;
                     statusElement.textContent = status;
                 }
-                
+
                 // Update icon in name
-                const statusIcon = status === 'connected' ? '🟢' : 
+                const statusIcon = status === 'connected' ? '🟢' :
                                  status === 'connecting' ? '🟡' : '🔴';
                 nameElement.textContent = `${statusIcon} ${serverName}`;
             }
@@ -730,13 +730,13 @@ class MCPClient {
         // Update the main status if we have any connected servers
         const connectedCount = this.connectedServers.size;
         const totalCount = this.availableServers.length;
-        
+
         if (connectedCount > 0) {
             this.updateStatus('connected', `Connected (${connectedCount}/${totalCount} servers)`);
         } else if (this.isInitialized) {
             this.updateStatus('connected', 'Connected (0 servers)');
         }
-        
+
         // Re-render the servers list to update the summary
         this.renderServersList();
     }
@@ -751,7 +751,7 @@ class MCPClient {
 
     displayTools(tools) {
         this.toolsList.innerHTML = '';
-        
+
         Object.entries(tools).forEach(([serverName, serverTools]) => {
             if (serverTools.length > 0) {
                 const serverHeader = document.createElement('div');
@@ -760,7 +760,7 @@ class MCPClient {
                 serverHeader.style.color = '#ffffff';
                 serverHeader.textContent = serverName;
                 this.toolsList.appendChild(serverHeader);
-                
+
                 serverTools.forEach(tool => {
                     const toolDiv = document.createElement('div');
                     toolDiv.className = 'tool-item';
@@ -772,7 +772,7 @@ class MCPClient {
                 });
             }
         });
-        
+
         if (this.toolsList.children.length === 0) {
             this.toolsList.innerHTML = '<div style="color: #9ca3af; font-style: italic;">No tools available</div>';
         }
@@ -801,12 +801,12 @@ class MCPClient {
 
     displayHistory(history) {
         this.historyContent.innerHTML = '';
-        
+
         if (history.length === 0) {
             this.historyContent.innerHTML = '<p style="color: #9ca3af; text-align: center;">No conversation history</p>';
             return;
         }
-        
+
         history.forEach((message, index) => {
             const messageDiv = document.createElement('div');
             messageDiv.style.marginBottom = '16px';
@@ -814,9 +814,9 @@ class MCPClient {
             messageDiv.style.background = message.role === 'user' ? '#3b82f6' : '#1a1a2e';
             messageDiv.style.borderRadius = '8px';
             messageDiv.style.color = '#ffffff';
-            
+
             const timestamp = message.timestamp ? new Date(message.timestamp).toLocaleString() : '';
-            
+
             messageDiv.innerHTML = `
                 <div style="font-weight: bold; margin-bottom: 4px;">
                     ${message.role === 'user' ? '👤 You' : '🤖 Assistant'}
@@ -824,7 +824,7 @@ class MCPClient {
                 </div>
                 <div>${this.formatMessage(message.content)}</div>
             `;
-            
+
             this.historyContent.appendChild(messageDiv);
         });
     }
@@ -841,7 +841,7 @@ class MCPClient {
         }
 
         this.addMessage('system', 'Initiating authentication with Identity Provider...');
-        
+
         // Save current state before navigating away
         if (this.sessionId) {
             sessionStorage.setItem('preAuthState', JSON.stringify({
@@ -850,7 +850,7 @@ class MCPClient {
                 timestamp: Date.now()
             }));
         }
-        
+
         // Navigate to authentication URL in the same tab
         const authUrl = "/api/openid/start/bob@tables.fake";
         window.location.href = authUrl;
@@ -861,9 +861,9 @@ class MCPClient {
             this.addMessage('system', '🔍 No MCP servers available to connect to');
             return;
         }
-        
+
         this.addMessage('system', `🔄 Auto-connecting to ${this.availableServers.length} available MCP servers...`);
-        
+
         // Connect to all available servers with a small delay between connections
         this.availableServers.forEach((server, index) => {
             setTimeout(() => {
