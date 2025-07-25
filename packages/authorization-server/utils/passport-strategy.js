@@ -1,4 +1,4 @@
-import passportSAML from '@node-saml/passport-saml';
+// import passportSAML from '@node-saml/passport-saml';
 import passportOIDC from 'passport-openidconnect';
 import Account from './account.js';
 import { cacheSubjectToken } from './id-token-cache.js';
@@ -9,29 +9,30 @@ const samlIssuer = process.env.CUSTOMER1_SAML_ISSUER;
 const SAML_CALLBACK_PATH = '/saml/callback/customer1';
 
 const OpenIDConnectStrategy = passportOIDC.Strategy;
-const SAMLStrategy = passportSAML.Strategy;
+// No SAML suppport right now
+// const SAMLStrategy = passportSAML.Strategy;
 
-export function createSAMLStrategy() {
-  if (!samlCertificate || !samlEntryPoint || !samlIssuer) {
-    console.log('Missing at least one saml env variable');
-    return;
-  }
+// export function createSAMLStrategy() {
+//   if (!samlCertificate || !samlEntryPoint || !samlIssuer) {
+//     console.log('Missing at least one saml env variable');
+//     return;
+//   }
 
-  return new SAMLStrategy(
-    {
-      path: SAML_CALLBACK_PATH,
-      entryPoint: samlEntryPoint,
-      issuer: samlIssuer,
-      signatureAlgorithm: 'sha256',
-      digestAlgorithm: 'sha256',
-      idpCert: samlCertificate,
-      callbackUrl: `${process.env.AUTH_SERVER}${SAML_CALLBACK_PATH}`,
-      audience: `${process.env.AUTH_SERVER}${SAML_CALLBACK_PATH}`,
-    },
-    (profile, done) => done(null, profile),
-    (profile, done) => done(null, profile)
-  );
-}
+//   return new SAMLStrategy(
+//     {
+//       path: SAML_CALLBACK_PATH,
+//       entryPoint: samlEntryPoint,
+//       issuer: samlIssuer,
+//       signatureAlgorithm: 'sha256',
+//       digestAlgorithm: 'sha256',
+//       idpCert: samlCertificate,
+//       callbackUrl: `${process.env.AUTH_SERVER}${SAML_CALLBACK_PATH}`,
+//       audience: `${process.env.AUTH_SERVER}${SAML_CALLBACK_PATH}`,
+//     },
+//     (profile, done) => done(null, profile),
+//     (profile, done) => done(null, profile)
+//   );
+// }
 
 export function createOIDCStrategy(org) {
   return new OpenIDConnectStrategy(
@@ -70,9 +71,9 @@ export function createOIDCStrategy(org) {
 }
 
 export function createPassportStrategy(org) {
-  if (org && org.use_saml_sso) {
-    return createSAMLStrategy();
-  }
+  // if (org && org.use_saml_sso) {
+  //   return createSAMLStrategy();
+  // }
 
   return createOIDCStrategy(org);
 }
