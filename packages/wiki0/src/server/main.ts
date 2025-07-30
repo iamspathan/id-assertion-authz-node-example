@@ -37,7 +37,7 @@ const redisStore = new RedisStore({
   prefix: 'wiki0:',
 });
 
-const cookieSecret = process.env.COOKIE_SECRET;
+const cookieSecret = 'secret';
 if (!cookieSecret) {
   throw new Error('Missing env variable COOKIE_SECRET');
 }
